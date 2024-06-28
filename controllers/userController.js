@@ -44,5 +44,29 @@ const signupUser = async (req, res) => {
     res.status(400).json({error: error.message})
   }
 }
+const activateUser = async (req, res) => {
+  const { email } = req.body; // Assuming email is passed in the request body
 
-module.exports = { signupUser, loginUser }
+  try {
+    // Step 1: Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Step 2: Update the user's active status
+    user.active = true;
+    user.loginAttempts=0;
+    await user.save(); // Save the updated user
+
+    res.status(200).json({ message: 'User account activated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
+module.exports = { signupUser, loginUser,activateUser }
